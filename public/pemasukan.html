@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pemasukan - Smart Pocket</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background-color: #f4f7f6;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        width: 260px;
+        background-color: #2c3e50;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        z-index: 1040;
+        transition: all 0.3s ease-in-out;
+      }
+      .sidebar-brand {
+        padding: 25px 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        background-color: #1a252f;
+        color: #ecf0f1;
+      }
+      .sidebar-nav {
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+      .nav-item {
+        padding: 12px 25px;
+        display: block;
+        color: #bdc3c7;
+        text-decoration: none;
+        font-size: 1.05rem;
+        transition: all 0.3s;
+      }
+      .nav-item:hover {
+        background-color: #34495e;
+        color: #ffffff;
+        padding-left: 30px;
+      }
+      .nav-item.active {
+        background-color: #3498db;
+        color: white;
+        border-left: 5px solid #2980b9;
+      }
+      .nav-item i {
+        width: 30px;
+        font-size: 1.1rem;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 20px 30px;
+        width: calc(100% - 260px);
+        height: 100vh;
+        overflow-y: auto;
+        transition: all 0.3s ease-in-out;
+      }
+      .top-navbar {
+        background: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-custom {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          left: -260px;
+        }
+        .sidebar.show {
+          left: 0;
+        }
+        .main-content {
+          width: 100%;
+          padding: 15px;
+        }
+        .sidebar-overlay.show {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <div class="top-navbar">
+        <div class="d-flex align-items-center gap-3">
+          <button
+            class="btn btn-outline-secondary d-md-none"
+            id="toggleSidebar"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+          <h5 class="mb-0 text-dark fw-bold">Manajemen Pemasukan</h5>
+        </div>
+        <div class="user-profile dropdown">
+          <div
+            class="d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer"
+          >
+            <div class="text-end d-none d-sm-block">
+              <span class="fw-bold d-block" style="font-size: 0.9rem"
+                >Halo, Steven!</span
+              >
+            </div>
+            <img
+              src="https://ui-avatars.com/api/?name=Steven&background=0d6efd&color=fff&bold=true"
+              alt="User"
+              class="rounded-circle shadow-sm"
+              width="40"
+            />
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3">
+            <li>
+              <a class="dropdown-item py-2" href="profil.html"
+                ><i class="fas fa-user-edit me-2 text-primary"></i> Edit
+                Profile</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item py-2 text-danger" href="login.html"
+                ><i class="fas fa-sign-out-alt me-2"></i> Keluar</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container-fluid p-0">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <div
+              class="card card-custom p-4 h-100 border-top border-4 border-success"
+            >
+              <h5 class="fw-bold mb-4" id="formTitle">
+                <i class="fas fa-plus-circle text-success me-2"></i>Catat
+                Pemasukan
+              </h5>
+
+              <div
+                id="alertPemasukan"
+                class="alert alert-success d-none py-2 small"
+                role="alert"
+              >
+                Aksi berhasil disimpan!
+              </div>
+
+              <form id="formPemasukan">
+                <input type="hidden" id="id_pemasukan" value="" />
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Tanggal</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="tanggal"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Sumber Pemasukan (Kategori)</label
+                  >
+                  <select class="form-select" id="sumber_pemasukan" required>
+                    <option value="" selected disabled>Pilih Sumber...</option>
+                    <option value="Gaji Bulanan">Gaji Bulanan</option>
+                    <option value="Bonus">Bonus / THR</option>
+                    <option value="Hasil Usaha">Hasil Usaha / Bisnis</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Nominal (Rp)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="nominal_pemasukan"
+                    placeholder="Contoh: 5000000"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Tujuan Dana (Masuk ke rekening mana?)</label
+                  >
+                  <select class="form-select" id="id_tabungan" required>
+                    <option value="" selected disabled>
+                      Memuat daftar tabungan...
+                    </option>
+                  </select>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label small fw-bold text-muted"
+                    >Keterangan (Opsional)</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="keterangan"
+                    rows="2"
+                    placeholder="Catatan tambahan..."
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  id="btnSimpan"
+                  class="btn btn-success w-100 fw-bold"
+                >
+                  <i class="fas fa-save me-2"></i>Simpan Pemasukan
+                </button>
+                <button
+                  type="button"
+                  id="btnBatal"
+                  class="btn btn-secondary w-100 fw-bold mt-2 d-none"
+                  onclick="batalEdit()"
+                >
+                  <i class="fas fa-times me-2"></i>Batal Edit
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-8 mb-4">
+            <div class="card card-custom p-4 h-100">
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h5 class="fw-bold mb-0">
+                  <i class="fas fa-list text-secondary me-2"></i>Riwayat
+                  Pemasukan Bulan Ini
+                </h5>
+                <h5 class="fw-bold text-success mb-0" id="totalPemasukan">
+                  Total: Rp 0
+                </h5>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Tanggal</th>
+                      <th scope="col">Sumber / Kategori</th>
+                      <th scope="col">Tujuan Dana</th>
+                      <th scope="col">Keterangan</th>
+                      <th scope="col" class="text-end">Nominal</th>
+                      <th scope="col" class="text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+      // 2. Set Tanggal Hari Ini & Format Mata Uang
+      document.getElementById("tanggal").valueAsDate = new Date();
+      const formatRp = (angka) => new Intl.NumberFormat("id-ID").format(angka);
+
+      // Ambil ID User dari memori browser
+      const currentUserId = localStorage.getItem("user_id");
+
+      // ==========================================
+      // 1. MENGAMBIL KATEGORI DARI BACKEND
+      // ==========================================
+      async function loadKategoriDropdown() {
+        try {
+          const response = await fetch("/api/kategori", {
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER
+          });
+          const data = await response.json();
+          const selectSumber = document.getElementById("sumber_pemasukan");
+
+          selectSumber.innerHTML =
+            '<option value="" selected disabled>Pilih Sumber...</option>';
+
+          if (response.ok) {
+            data.forEach((item) => {
+              if (item.tipe === "pemasukan") {
+                selectSumber.innerHTML += `<option value="${item.nama}">${item.nama}</option>`;
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Gagal memuat opsi kategori:", error);
+        }
+      }
+
+      // ==========================================
+      // 2. MENGAMBIL DAFTAR TABUNGAN
+      // ==========================================
+      async function loadTabunganDropdown() {
+        try {
+          const response = await fetch("/api/tabungan", {
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER
+          });
+          const data = await response.json();
+          const selectTabungan = document.getElementById("id_tabungan");
+
+          selectTabungan.innerHTML =
+            '<option value="" selected disabled>Pilih Tujuan Dana...</option>';
+
+          if (response.ok) {
+            data.forEach((item) => {
+              selectTabungan.innerHTML += `<option value="${item.id}">${item.nama_bank} (Saldo: Rp ${formatRp(item.saldo)})</option>`;
+            });
+          }
+        } catch (error) {
+          console.error("Gagal memuat opsi tabungan:", error);
+        }
+      }
+
+      // ==========================================
+      // 3. AMBIL DATA & TAMPILKAN KE TABEL (GET)
+      // ==========================================
+      async function loadRiwayatPemasukan() {
+        try {
+          const response = await fetch("/api/pemasukan", {
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER
+          });
+          const data = await response.json();
+          const tbody = document.getElementById("tabelBody");
+          const totalText = document.getElementById("totalPemasukan");
+
+          tbody.innerHTML = "";
+          let totalNominal = 0;
+
+          if (response.ok) {
+            data.forEach((item) => {
+              totalNominal += parseFloat(item.nominal);
+              const keteranganText = item.keterangan ? item.keterangan : "-";
+              const tujuanDanaText = item.nama_bank
+                ? `<i class="fas fa-wallet text-info me-1"></i> ${item.nama_bank}`
+                : '<span class="text-muted fst-italic">Tidak ditentukan</span>';
+
+              const d = new Date(item.tanggal);
+              const year = d.getFullYear();
+              const month = String(d.getMonth() + 1).padStart(2, "0");
+              const day = String(d.getDate()).padStart(2, "0");
+              const tanggalInput = `${year}-${month}-${day}`;
+              const tanggalTabel = d.toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              });
+
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                  <td>${tanggalTabel}</td>
+                  <td><span class="badge bg-success bg-opacity-10 text-success px-2 py-1"><i class="fas fa-arrow-down me-1"></i> ${item.sumber}</span></td>
+                  <td class="fw-bold">${tujuanDanaText}</td>
+                  <td class="text-muted small">${keteranganText}</td>
+                  <td class="text-end fw-bold text-success">+ Rp ${formatRp(item.nominal)}</td>
+                  <td class="text-center">
+                      <button class="btn btn-sm btn-outline-primary me-1" onclick="editPemasukan('${item.id}', '${tanggalInput}', '${item.sumber}', '${item.nominal}', '${item.id_tabungan}', '${keteranganText}')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" onclick="hapusPemasukan(${item.id})">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                  </td>
+              `;
+              tbody.appendChild(tr);
+            });
+            if (totalText)
+              totalText.innerText = `Total: Rp ${formatRp(totalNominal)}`;
+          }
+        } catch (error) {
+          console.error("Gagal memuat riwayat:", error);
+        }
+      }
+
+      // ==========================================
+      // 4. SUBMIT FORM (SIMPAN / UPDATE)
+      // ==========================================
+      document
+        .getElementById("formPemasukan")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const idPemasukan = document.getElementById("id_pemasukan").value;
+          const dataKirim = {
+            tanggal: document.getElementById("tanggal").value,
+            sumber_pemasukan: document.getElementById("sumber_pemasukan").value,
+            nominal_pemasukan:
+              document.getElementById("nominal_pemasukan").value,
+            id_tabungan: document.getElementById("id_tabungan").value,
+            keterangan: document.getElementById("keterangan").value,
+          };
+
+          const methodType = idPemasukan ? "PUT" : "POST";
+          const endpointUrl = idPemasukan
+            ? `/api/pemasukan/${idPemasukan}`
+            : "/api/pemasukan";
+
+          try {
+            const response = await fetch(endpointUrl, {
+              method: methodType,
+              headers: {
+                "Content-Type": "application/json",
+                "user-id": currentUserId, // <--- SISIPKAN ID USER SAAT MENYIMPAN
+              },
+              body: JSON.stringify(dataKirim),
+            });
+
+            if (response.ok) {
+              const alertBox = document.getElementById("alertPemasukan");
+              alertBox.classList.remove("d-none");
+
+              setTimeout(() => {
+                alertBox.classList.add("d-none");
+                batalEdit();
+                loadRiwayatPemasukan();
+                // Refresh saldo tabungan di dropdown jika baru menambah pemasukan
+                loadTabunganDropdown();
+              }, 1500);
+            } else {
+              alert("Terjadi kesalahan pada server!");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      // ==========================================
+      // 5. FUNGSI MENGHAPUS DATA (DELETE)
+      // ==========================================
+      async function hapusPemasukan(id) {
+        if (!confirm("Apakah Anda yakin ingin menghapus data pemasukan ini?"))
+          return;
+        try {
+          const response = await fetch(`/api/pemasukan/${id}`, {
+            method: "DELETE",
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER SAAT MENGHAPUS
+          });
+          if (response.ok) {
+            loadRiwayatPemasukan();
+            loadTabunganDropdown();
+          } else {
+            alert("Gagal menghapus data!");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      // 6. PERSIAPAN EDIT DATA
+      function editPemasukan(
+        id,
+        tanggal,
+        sumber,
+        nominal,
+        id_tabungan,
+        keterangan,
+      ) {
+        document.getElementById("id_pemasukan").value = id;
+        document.getElementById("tanggal").value = tanggal;
+        document.getElementById("sumber_pemasukan").value = sumber;
+        document.getElementById("nominal_pemasukan").value = nominal;
+
+        if (
+          id_tabungan !== "null" &&
+          id_tabungan !== "undefined" &&
+          id_tabungan
+        ) {
+          document.getElementById("id_tabungan").value = id_tabungan;
+        } else {
+          document.getElementById("id_tabungan").value = "";
+        }
+
+        document.getElementById("keterangan").value =
+          keterangan !== "-" ? keterangan : "";
+
+        document.getElementById("formTitle").innerHTML =
+          '<i class="fas fa-edit text-warning me-2"></i>Edit Pemasukan';
+        const btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Update Data';
+        btnSimpan.classList.replace("btn-success", "btn-warning");
+        btnSimpan.classList.add("text-dark");
+        document.getElementById("btnBatal").classList.remove("d-none");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // 7. BATAL EDIT
+      function batalEdit() {
+        document.getElementById("formPemasukan").reset();
+        document.getElementById("id_pemasukan").value = "";
+        document.getElementById("tanggal").valueAsDate = new Date();
+
+        document.getElementById("formTitle").innerHTML =
+          '<i class="fas fa-plus-circle text-success me-2"></i>Catat Pemasukan';
+        const btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerHTML =
+          '<i class="fas fa-save me-2"></i>Simpan Pemasukan';
+        btnSimpan.classList.replace("btn-warning", "btn-success");
+        btnSimpan.classList.remove("text-dark");
+        document.getElementById("btnBatal").classList.add("d-none");
+      }
+
+      // PANGGIL FUNGSI SAAT HALAMAN DIBUKA
+      document.addEventListener("DOMContentLoaded", () => {
+        loadKategoriDropdown();
+        loadTabunganDropdown();
+        loadRiwayatPemasukan();
+      });
+    </script>
+  </body>
+</html>

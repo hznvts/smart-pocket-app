@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen Kategori - Smart Pocket</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background-color: #f4f7f6;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        width: 260px;
+        background-color: #2c3e50;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        z-index: 1040;
+        transition: all 0.3s ease-in-out;
+      }
+      .sidebar-brand {
+        padding: 25px 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        background-color: #1a252f;
+        color: #ecf0f1;
+      }
+      .sidebar-nav {
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+      .nav-item {
+        padding: 12px 25px;
+        display: block;
+        color: #bdc3c7;
+        text-decoration: none;
+        font-size: 1.05rem;
+        transition: all 0.3s;
+      }
+      .nav-item:hover {
+        background-color: #34495e;
+        color: #ffffff;
+        padding-left: 30px;
+      }
+      .nav-item.active {
+        background-color: #f39c12;
+        color: white;
+        border-left: 5px solid #e67e22;
+      }
+      .nav-item i {
+        width: 30px;
+        font-size: 1.1rem;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 20px 30px;
+        width: calc(100% - 260px);
+        height: 100vh;
+        overflow-y: auto;
+        transition: all 0.3s ease-in-out;
+      }
+      .top-navbar {
+        background: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-custom {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          left: -260px;
+        }
+        .sidebar.show {
+          left: 0;
+        }
+        .main-content {
+          width: 100%;
+          padding: 15px;
+        }
+        .sidebar-overlay.show {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <div class="top-navbar">
+        <div class="d-flex align-items-center gap-3">
+          <button
+            class="btn btn-outline-secondary d-md-none"
+            id="toggleSidebar"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+          <h5 class="mb-0 text-dark fw-bold">Manajemen Kategori</h5>
+        </div>
+        <div class="user-profile dropdown">
+          <div
+            class="d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer"
+          >
+            <div class="text-end d-none d-sm-block">
+              <span class="fw-bold d-block" style="font-size: 0.9rem"
+                >Halo, Steven!</span
+              >
+            </div>
+            <img
+              src="https://ui-avatars.com/api/?name=Steven&background=0d6efd&color=fff&bold=true"
+              alt="User"
+              class="rounded-circle shadow-sm"
+              width="40"
+            />
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3">
+            <li>
+              <a class="dropdown-item py-2" href="profil.html"
+                ><i class="fas fa-user-edit me-2 text-primary"></i> Edit
+                Profile</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item py-2 text-danger" href="login.html"
+                ><i class="fas fa-sign-out-alt me-2"></i> Keluar</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container-fluid p-0">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <div
+              class="card card-custom p-4 h-100 border-top border-4 border-warning"
+            >
+              <h5 class="fw-bold mb-4" id="formTitle">
+                <i class="fas fa-plus-circle text-warning me-2"></i>Tambah
+                Kategori Baru
+              </h5>
+
+              <div
+                id="alertKategori"
+                class="alert alert-success d-none py-2 small"
+                role="alert"
+              >
+                Data berhasil disimpan!
+              </div>
+
+              <form id="formKategori">
+                <input type="hidden" id="id_kategori" value="" />
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Tipe Kategori</label
+                  >
+                  <select class="form-select" id="tipe_kategori" required>
+                    <option value="" selected disabled>Pilih Tipe...</option>
+                    <option value="pemasukan">Pemasukan</option>
+                    <option value="kebutuhan">
+                      Pengeluaran - Kebutuhan (Needs)
+                    </option>
+                    <option value="keinginan">
+                      Pengeluaran - Keinginan (Wants)
+                    </option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label small fw-bold text-muted"
+                    >Nama Kategori</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nama_kategori"
+                    placeholder="Contoh: Belanja Dapur"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  id="btnSimpan"
+                  class="btn btn-warning w-100 fw-bold text-dark"
+                >
+                  <i class="fas fa-save me-2"></i>Simpan Kategori
+                </button>
+                <button
+                  type="button"
+                  id="btnBatal"
+                  class="btn btn-secondary w-100 fw-bold mt-2 d-none"
+                  onclick="batalEdit()"
+                >
+                  <i class="fas fa-times me-2"></i>Batal Edit
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-8 mb-4">
+            <div class="card card-custom p-4 h-100">
+              <h5 class="fw-bold mb-4">
+                <i class="fas fa-list text-secondary me-2"></i>Daftar Kategori
+                Tersedia
+              </h5>
+
+              <ul class="nav nav-tabs mb-3" id="kategoriTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link active fw-bold text-success"
+                    id="pemasukan-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tab-pemasukan"
+                    type="button"
+                    role="tab"
+                  >
+                    Pemasukan
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link fw-bold text-danger"
+                    id="pengeluaran-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tab-pengeluaran"
+                    type="button"
+                    role="tab"
+                  >
+                    Pengeluaran
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="kategoriTabContent">
+                <div
+                  class="tab-pane fade show active"
+                  id="tab-pemasukan"
+                  role="tabpanel"
+                >
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Nama Kategori</th>
+                          <th>Tipe</th>
+                          <th class="text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tabelPemasukan"></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab-pengeluaran" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Nama Kategori</th>
+                          <th>Kelompok (Fuzzy)</th>
+                          <th class="text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tabelPengeluaran"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+      // Ambil ID User dari memori browser
+      const currentUserId = localStorage.getItem("user_id");
+
+      // Toggle Sidebar
+      const toggleBtn = document.getElementById("toggleSidebar");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      if (toggleBtn)
+        toggleBtn.addEventListener("click", () => {
+          sidebar.classList.add("show");
+          overlay.classList.add("show");
+        });
+      if (overlay)
+        overlay.addEventListener("click", () => {
+          sidebar.classList.remove("show");
+          overlay.classList.remove("show");
+        });
+
+      // ============================================
+      // LOGIKA CRUD KATEGORI
+      // ============================================
+
+      // 1. TAMPILKAN DATA DARI BACKEND
+      async function loadKategori() {
+        try {
+          const response = await fetch("/api/kategori", {
+            headers: {
+              "user-id": currentUserId, // <--- ID USER UNTUK MENGAMBIL DATA
+            },
+          });
+          const data = await response.json();
+
+          const tbodyPemasukan = document.getElementById("tabelPemasukan");
+          const tbodyPengeluaran = document.getElementById("tabelPengeluaran");
+
+          tbodyPemasukan.innerHTML = "";
+          tbodyPengeluaran.innerHTML = "";
+
+          if (response.ok) {
+            data.forEach((item) => {
+              const tr = document.createElement("tr");
+
+              // Generate Tombol Aksi
+              const actionButtons = `
+                <td class="text-center">
+                  <button class="btn btn-sm btn-outline-primary me-1" onclick="editKategori('${item.id}', '${item.tipe}', '${item.nama}')"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="hapusKategori(${item.id})"><i class="fas fa-trash"></i></button>
+                </td>
+              `;
+
+              // Pisahkan ke Tab yang Sesuai
+              if (item.tipe === "pemasukan") {
+                tr.innerHTML = `
+                  <td class="fw-bold">${item.nama}</td>
+                  <td><span class="badge bg-success bg-opacity-10 text-success">Pemasukan</span></td>
+                  ${actionButtons}
+                `;
+                tbodyPemasukan.appendChild(tr);
+              } else if (item.tipe === "kebutuhan") {
+                tr.innerHTML = `
+                  <td class="fw-bold">${item.nama}</td>
+                  <td><span class="badge bg-primary bg-opacity-10 text-primary">Kebutuhan (Needs)</span></td>
+                  ${actionButtons}
+                `;
+                tbodyPengeluaran.appendChild(tr);
+              } else if (item.tipe === "keinginan") {
+                tr.innerHTML = `
+                  <td class="fw-bold">${item.nama}</td>
+                  <td><span class="badge bg-warning bg-opacity-10 text-warning">Keinginan (Wants)</span></td>
+                  ${actionButtons}
+                `;
+                tbodyPengeluaran.appendChild(tr);
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Gagal memuat kategori:", error);
+        }
+      }
+
+      // 2. SIMPAN & UPDATE DATA (POST / PUT)
+      document
+        .getElementById("formKategori")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const idKategori = document.getElementById("id_kategori").value;
+          const dataKirim = {
+            tipe_kategori: document.getElementById("tipe_kategori").value,
+            nama_kategori: document.getElementById("nama_kategori").value,
+          };
+
+          const methodType = idKategori ? "PUT" : "POST";
+          const endpointUrl = idKategori
+            ? `/api/kategori/${idKategori}`
+            : "/api/kategori";
+
+          try {
+            const response = await fetch(endpointUrl, {
+              method: methodType,
+              headers: {
+                "Content-Type": "application/json",
+                "user-id": currentUserId, // <--- SISIPKAN ID USER SAAT MENYIMPAN
+              },
+              body: JSON.stringify(dataKirim),
+            });
+
+            if (response.ok) {
+              const alertBox = document.getElementById("alertKategori");
+              alertBox.classList.remove("d-none");
+
+              setTimeout(() => {
+                alertBox.classList.add("d-none");
+                batalEdit();
+                loadKategori(); // Refresh tabel
+              }, 1500);
+            } else {
+              alert("Gagal menyimpan kategori!");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      // 3. HAPUS DATA (DELETE)
+      async function hapusKategori(id) {
+        if (
+          !confirm(
+            "Yakin ingin menghapus kategori ini? Data transaksi terkait mungkin akan kehilangan labelnya.",
+          )
+        )
+          return;
+
+        try {
+          const response = await fetch(`/api/kategori/${id}`, {
+            method: "DELETE",
+            headers: {
+              "user-id": currentUserId, // <--- SISIPKAN ID USER SAAT MENGHAPUS
+            },
+          });
+          if (response.ok) {
+            loadKategori();
+          } else {
+            alert("Gagal menghapus kategori!");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      // 4. PERSIAPAN EDIT
+      function editKategori(id, tipe, nama) {
+        document.getElementById("id_kategori").value = id;
+        document.getElementById("tipe_kategori").value = tipe;
+        document.getElementById("nama_kategori").value = nama;
+
+        // Ubah UI Form
+        document.getElementById("formTitle").innerHTML =
+          '<i class="fas fa-edit text-warning me-2"></i>Edit Kategori';
+
+        const btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Update Kategori';
+
+        document.getElementById("btnBatal").classList.remove("d-none");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // 5. BATAL EDIT
+      function batalEdit() {
+        document.getElementById("formKategori").reset();
+        document.getElementById("id_kategori").value = "";
+
+        document.getElementById("formTitle").innerHTML =
+          '<i class="fas fa-plus-circle text-warning me-2"></i>Tambah Kategori Baru';
+
+        const btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Kategori';
+
+        document.getElementById("btnBatal").classList.add("d-none");
+      }
+
+      // Panggil load saat halaman pertama dibuka
+      document.addEventListener("DOMContentLoaded", loadKategori);
+    </script>
+  </body>
+</html>

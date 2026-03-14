@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Smart Pocket</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      body {
+        background-color: #f4f7f6;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        width: 260px;
+        background-color: #2c3e50;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        z-index: 1040;
+        transition: all 0.3s ease-in-out;
+      }
+      .sidebar-brand {
+        padding: 25px 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        background-color: #1a252f;
+        color: #ecf0f1;
+      }
+      .sidebar-nav {
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+      .nav-item {
+        padding: 12px 25px;
+        display: block;
+        color: #bdc3c7;
+        text-decoration: none;
+        font-size: 1.05rem;
+        transition: all 0.3s;
+      }
+      .nav-item:hover {
+        background-color: #34495e;
+        color: #ffffff;
+        padding-left: 30px;
+      }
+      .nav-item.active {
+        background-color: #3498db;
+        color: white;
+        border-left: 5px solid #2980b9;
+      }
+      .nav-item i {
+        width: 30px;
+        font-size: 1.1rem;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 20px 30px;
+        width: calc(100% - 260px);
+        height: 100vh;
+        overflow-y: auto;
+        transition: all 0.3s ease-in-out;
+      }
+      .top-navbar {
+        background: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-custom {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        height: 100%;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          left: -260px;
+        }
+        .sidebar.show {
+          left: 0;
+        }
+        .main-content {
+          width: 100%;
+          padding: 15px;
+        }
+        .sidebar-overlay.show {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <div class="top-navbar">
+        <div class="d-flex align-items-center gap-3">
+          <button
+            class="btn btn-outline-secondary d-md-none"
+            id="toggleSidebar"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+          <h5 class="mb-0 text-dark fw-bold">Dashboard Finansial</h5>
+        </div>
+        <div class="user-profile dropdown">
+          <div
+            class="d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer"
+          >
+            <div class="text-end d-none d-sm-block">
+              <span class="fw-bold d-block" style="font-size: 0.9rem"
+                >Halo, Steven!</span
+              >
+              <small
+                class="text-muted"
+                style="font-size: 0.8rem"
+                id="namaBulanTahun"
+                >Bulan Ini</small
+              >
+            </div>
+            <img
+              src="https://ui-avatars.com/api/?name=Steven&background=0d6efd&color=fff&bold=true"
+              alt="User"
+              class="rounded-circle shadow-sm"
+              width="40"
+            />
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3">
+            <li>
+              <a class="dropdown-item py-2" href="profil.html"
+                ><i class="fas fa-user-edit me-2 text-primary"></i> Edit
+                Profile</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item py-2 text-danger" href="login.html"
+                ><i class="fas fa-sign-out-alt me-2"></i> Keluar</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container-fluid p-0">
+        <div class="row mb-4 g-3">
+          <div class="col-md-4">
+            <div
+              class="card card-custom p-4 border-start border-4 border-success shadow-sm"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted mb-1">Total Pemasukan</h6>
+                  <h4 class="fw-bold text-success mb-0" id="dashPemasukan">
+                    Rp 0
+                  </h4>
+                </div>
+                <div
+                  class="bg-success bg-opacity-10 p-3 rounded-circle text-success"
+                >
+                  <i class="fas fa-arrow-down fa-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card card-custom p-4 border-start border-4 border-danger shadow-sm"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted mb-1">Total Pengeluaran</h6>
+                  <h4 class="fw-bold text-danger mb-0" id="dashPengeluaran">
+                    Rp 0
+                  </h4>
+                </div>
+                <div
+                  class="bg-danger bg-opacity-10 p-3 rounded-circle text-danger"
+                >
+                  <i class="fas fa-arrow-up fa-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card card-custom p-4 border-start border-4 border-primary shadow-sm"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted mb-1">Sisa Saldo (Net)</h6>
+                  <h4 class="fw-bold text-primary mb-0" id="dashNet">Rp 0</h4>
+                </div>
+                <div
+                  class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary"
+                >
+                  <i class="fas fa-wallet fa-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4 g-3">
+          <div class="col-lg-5">
+            <div class="card card-custom p-4">
+              <h6 class="fw-bold mb-4 text-center">Visualisasi Arus Kas</h6>
+              <div style="width: 250px; margin: 0 auto">
+                <canvas id="cashflowChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="card card-custom p-4">
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h6 class="fw-bold mb-0">
+                  Ringkasan Rekomendasi Budget Terkini
+                </h6>
+                <a
+                  href="rekomendasi.html"
+                  class="btn btn-sm btn-outline-primary"
+                  >Hitung Ulang</a
+                >
+              </div>
+              <p class="text-muted small mb-3">
+                Berdasarkan perhitungan Fuzzy Tsukamoto terakhir, berikut adalah
+                batas ideal alokasi dana Anda bulan ini:
+              </p>
+
+              <div class="row g-2 text-center">
+                <div class="col-4">
+                  <div class="p-3 bg-light rounded">
+                    <span
+                      class="d-block text-muted small fw-bold mb-1"
+                      id="dashPersenKeb"
+                      >Kebutuhan (0%)</span
+                    >
+                    <h5 class="fw-bold text-primary mb-0" id="dashNomKeb">
+                      Rp 0
+                    </h5>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-3 bg-light rounded">
+                    <span
+                      class="d-block text-muted small fw-bold mb-1"
+                      id="dashPersenKei"
+                      >Keinginan (0%)</span
+                    >
+                    <h5 class="fw-bold text-warning mb-0" id="dashNomKei">
+                      Rp 0
+                    </h5>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-3 bg-light rounded">
+                    <span
+                      class="d-block text-muted small fw-bold mb-1"
+                      id="dashPersenTab"
+                      >Tabungan (0%)</span
+                    >
+                    <h5 class="fw-bold text-success mb-0" id="dashNomTab">
+                      Rp 0
+                    </h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="text-muted fw-bold"
+                    >Pengeluaran vs Rekomendasi (Kebutuhan & Keinginan)</span
+                  >
+                  <span class="text-danger fw-bold" id="progressText"
+                    >Rp 0 / Rp 9.600.000</span
+                  >
+                </div>
+                <div class="progress" style="height: 10px">
+                  <div
+                    id="progressBar"
+                    class="progress-bar bg-danger"
+                    role="progressbar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card card-custom p-4">
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h6 class="fw-bold mb-0">5 Transaksi Terakhir</h6>
+                <a
+                  href="riwayat.html"
+                  class="text-decoration-none small fw-bold"
+                  >Lihat Semua</a
+                >
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Kategori</th>
+                      <th>Keterangan</th>
+                      <th class="text-end">Nominal</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelTransaksiBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/layout.js"></script>
+
+    <script>
+      // Format Uang Rupiah
+      const formatRp = (angka) => new Intl.NumberFormat("id-ID").format(angka);
+
+      // Set text nama bulan tahun di profil pojok kanan atas
+      const opsiBulan = { month: "short", year: "numeric" };
+      document.getElementById("namaBulanTahun").innerText =
+        `Bulan Ini: ${new Date().toLocaleDateString("id-ID", opsiBulan)}`;
+
+      let cashflowChartInstance = null; // Menyimpan instance chart agar bisa diupdate
+
+      // ============================================
+      // FUNGSI UTAMA: LOAD DATA DASHBOARD DARI API
+      // ============================================
+      async function loadDashboard() {
+        try {
+          const response = await fetch("/api/dashboard", {
+            headers: {
+              "user-id": localStorage.getItem("user_id"), // <--- TAMBAHKAN INI AGAR NODE.JS TAHU SIAPA YANG LOGIN
+            },
+          });
+          const data = await response.json();
+
+          const totalMasuk = parseFloat(data.total_pemasukan);
+          const totalKeluar = parseFloat(data.total_pengeluaran);
+          const sisaSaldo = totalMasuk - totalKeluar;
+
+          // 1. UPDATE KARTU RINGKASAN
+          document.getElementById("dashPemasukan").innerText =
+            `Rp ${formatRp(totalMasuk)}`;
+          document.getElementById("dashPengeluaran").innerText =
+            `Rp ${formatRp(totalKeluar)}`;
+
+          const elNet = document.getElementById("dashNet");
+          if (sisaSaldo < 0) {
+            elNet.innerText = `- Rp ${formatRp(Math.abs(sisaSaldo))}`;
+            elNet.classList.replace("text-primary", "text-danger");
+          } else {
+            elNet.innerText = `Rp ${formatRp(sisaSaldo)}`;
+          }
+
+          // 2. UPDATE PIE CHART
+          const saldoUntukChart = sisaSaldo > 0 ? sisaSaldo : 0;
+          renderChart(totalKeluar, saldoUntukChart);
+
+          // 3. UPDATE TABEL 5 TRANSAKSI TERAKHIR
+          const tbody = document.getElementById("tabelTransaksiBody");
+          tbody.innerHTML = "";
+
+          if (data.transaksi_terakhir.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Belum ada transaksi bulan ini.</td></tr>`;
+          } else {
+            data.transaksi_terakhir.forEach((item) => {
+              const tr = document.createElement("tr");
+
+              const d = new Date(item.tanggal);
+              const tanggalTabel = d.toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              });
+              const ket = item.keterangan ? item.keterangan : "-";
+
+              if (item.jenis === "pemasukan") {
+                tr.innerHTML = `
+                        <td>${tanggalTabel}</td>
+                        <td><span class="badge bg-success bg-opacity-10 text-success"><i class="fas fa-arrow-down me-1"></i> ${item.kategori}</span></td>
+                        <td class="text-muted small">${ket}</td>
+                        <td class="text-end fw-bold text-success">+ Rp ${formatRp(item.nominal)}</td>
+                    `;
+              } else {
+                tr.innerHTML = `
+                        <td>${tanggalTabel}</td>
+                        <td><span class="badge bg-danger bg-opacity-10 text-danger"><i class="fas fa-arrow-up me-1"></i> ${item.kategori}</span></td>
+                        <td class="text-muted small">${ket}</td>
+                        <td class="text-end fw-bold text-danger">- Rp ${formatRp(item.nominal)}</td>
+                    `;
+              }
+              tbody.appendChild(tr);
+            });
+          }
+
+          // ============================================
+          // 4. UPDATE REKOMENDASI & PROGRESS BAR DARI DATABASE
+          // ============================================
+          try {
+            const resRekom = await fetch("/api/rekomendasi-terbaru", {
+              headers: {
+                "user-id": localStorage.getItem("user_id"), // <--- TAMBAHKAN INI JUGA
+              },
+            });
+            if (resRekom.ok) {
+              const dataRekom = await resRekom.json();
+
+              // Target Pengeluaran = Anggaran Kebutuhan + Keinginan
+              const targetPengeluaran =
+                dataRekom.nominal_kebutuhan + dataRekom.nominal_keinginan;
+
+              // Update Teks Tiga Kotak Dashboard
+              document.getElementById("dashPersenKeb").innerText =
+                `Kebutuhan (${dataRekom.persen_kebutuhan}%)`;
+              document.getElementById("dashNomKeb").innerText =
+                `Rp ${formatRp(dataRekom.nominal_kebutuhan)}`;
+
+              document.getElementById("dashPersenKei").innerText =
+                `Keinginan (${dataRekom.persen_keinginan}%)`;
+              document.getElementById("dashNomKei").innerText =
+                `Rp ${formatRp(dataRekom.nominal_keinginan)}`;
+
+              document.getElementById("dashPersenTab").innerText =
+                `Tabungan (${dataRekom.persen_tabungan}%)`;
+              document.getElementById("dashNomTab").innerText =
+                `Rp ${formatRp(dataRekom.nominal_tabungan)}`;
+
+              // Update Progress Bar
+              document.getElementById("progressText").innerText =
+                `Rp ${formatRp(totalKeluar)} / Rp ${formatRp(targetPengeluaran)}`;
+
+              let persenProgress = (totalKeluar / targetPengeluaran) * 100;
+              if (persenProgress > 100) persenProgress = 100; // Maksimal bar 100% penuh
+
+              document.getElementById("progressBar").style.width =
+                `${persenProgress}%`;
+            } else {
+              // Jika belum ada data rekomendasi sama sekali di database bulan ini
+              document.getElementById("progressText").innerText =
+                `Rp ${formatRp(totalKeluar)} / Rp 0 (Hitung dulu di menu Rekomendasi)`;
+              document.getElementById("progressBar").style.width = `0%`;
+            }
+          } catch (error) {
+            console.log("Rekomendasi belum dihitung.");
+          }
+        } catch (error) {
+          console.error("Gagal memuat dashboard:", error);
+        }
+      }
+
+      // FUNGSI RENDER CHART
+      function renderChart(pengeluaran, sisaSaldo) {
+        const ctx = document.getElementById("cashflowChart").getContext("2d");
+
+        // Hancurkan chart lama jika sudah ada (mencegah bug numpuk)
+        if (cashflowChartInstance) {
+          cashflowChartInstance.destroy();
+        }
+
+        // Jika keduanya 0, tampilkan chart abu-abu kosong
+        if (pengeluaran === 0 && sisaSaldo === 0) {
+          pengeluaran = 1;
+          sisaSaldo = 0;
+        }
+
+        cashflowChartInstance = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: ["Total Pengeluaran", "Sisa Saldo (Net)"],
+            datasets: [
+              {
+                data: [pengeluaran, sisaSaldo],
+                backgroundColor: ["#dc3545", "#0d6efd"],
+                borderWidth: 2,
+                borderColor: "#ffffff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    if (
+                      context.raw === 1 &&
+                      pengeluaran === 1 &&
+                      sisaSaldo === 0
+                    )
+                      return " Belum ada data"; // Kondisi kosong
+                    return (
+                      " Rp " +
+                      new Intl.NumberFormat("id-ID").format(context.raw)
+                    );
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Jalankan fungsi load data saat halaman dibuka
+      document.addEventListener("DOMContentLoaded", loadDashboard);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pengeluaran - Smart Pocket</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background-color: #f4f7f6;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        width: 260px;
+        background-color: #2c3e50;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        z-index: 1040;
+        transition: all 0.3s ease-in-out;
+      }
+      .sidebar-brand {
+        padding: 25px 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        background-color: #1a252f;
+        color: #ecf0f1;
+      }
+      .sidebar-nav {
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+      .nav-item {
+        padding: 12px 25px;
+        display: block;
+        color: #bdc3c7;
+        text-decoration: none;
+        font-size: 1.05rem;
+        transition: all 0.3s;
+      }
+      .nav-item:hover {
+        background-color: #34495e;
+        color: #ffffff;
+        padding-left: 30px;
+      }
+      .nav-item.active {
+        background-color: #e74c3c;
+        color: white;
+        border-left: 5px solid #c0392b;
+      }
+      .nav-item i {
+        width: 30px;
+        font-size: 1.1rem;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 20px 30px;
+        width: calc(100% - 260px);
+        height: 100vh;
+        overflow-y: auto;
+        transition: all 0.3s ease-in-out;
+      }
+      .top-navbar {
+        background: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-custom {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          left: -260px;
+        }
+        .sidebar.show {
+          left: 0;
+        }
+        .main-content {
+          width: 100%;
+          padding: 15px;
+        }
+        .sidebar-overlay.show {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <div class="top-navbar">
+        <div class="d-flex align-items-center gap-3">
+          <button
+            class="btn btn-outline-secondary d-md-none"
+            id="toggleSidebar"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+          <h5 class="mb-0 text-dark fw-bold">Manajemen Pengeluaran</h5>
+        </div>
+        <div class="user-profile dropdown">
+          <div
+            class="d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer"
+          >
+            <div class="text-end d-none d-sm-block">
+              <span class="fw-bold d-block" style="font-size: 0.9rem"
+                >Halo, Steven!</span
+              >
+            </div>
+            <img
+              src="https://ui-avatars.com/api/?name=Steven&background=0d6efd&color=fff&bold=true"
+              alt="User"
+              class="rounded-circle shadow-sm"
+              width="40"
+            />
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3">
+            <li>
+              <a class="dropdown-item py-2" href="profil.html"
+                ><i class="fas fa-user-edit me-2 text-primary"></i> Edit
+                Profile</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item py-2 text-danger" href="login.html"
+                ><i class="fas fa-sign-out-alt me-2"></i> Keluar</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container-fluid p-0">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <div
+              class="card card-custom p-4 h-100 border-top border-4 border-danger"
+            >
+              <h5 class="fw-bold mb-4" id="formTitle">
+                <i class="fas fa-minus-circle text-danger me-2"></i>Catat
+                Pengeluaran
+              </h5>
+
+              <div
+                id="alertPengeluaran"
+                class="alert alert-success d-none py-2 small"
+                role="alert"
+              >
+                <i class="fas fa-check-circle me-1"></i> Data berhasil disimpan!
+              </div>
+
+              <form id="formPengeluaran">
+                <input type="hidden" id="id_pengeluaran" value="" />
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Tanggal</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="tanggal"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Kategori Pengeluaran</label
+                  >
+                  <select
+                    class="form-select"
+                    id="kategori_pengeluaran"
+                    required
+                  >
+                    <option value="" selected disabled>
+                      Pilih Kategori...
+                    </option>
+                    <optgroup label="Kebutuhan (Needs)">
+                      <option value="Makanan & Minuman">
+                        Makanan & Minuman
+                      </option>
+                      <option value="Transportasi">
+                        Transportasi / Bensin
+                      </option>
+                      <option value="Tagihan & Utang">Tagihan & Cicilan</option>
+                      <option value="Belanja Bulanan">Belanja Bulanan</option>
+                    </optgroup>
+                    <optgroup label="Keinginan (Wants)">
+                      <option value="Hiburan">Hiburan / Langganan</option>
+                      <option value="Belanja Pribadi">
+                        Belanja Pakaian / Hobi
+                      </option>
+                      <option value="Jajan">Jajan / Nongkrong</option>
+                    </optgroup>
+                    <optgroup label="Lainnya">
+                      <option value="Kesehatan">Kesehatan / Obat</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Nominal (Rp)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="nominal_pengeluaran"
+                    placeholder="Contoh: 150000"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted"
+                    >Sumber Dana (Pakai uang dari mana?)</label
+                  >
+                  <select class="form-select" id="id_tabungan" required>
+                    <option value="" selected disabled>
+                      Memuat daftar tabungan...
+                    </option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label small fw-bold text-muted"
+                    >Keterangan (Opsional)</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="keterangan"
+                    rows="2"
+                    placeholder="Catatan, misal: Makan siang di kafe..."
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  id="btnSimpan"
+                  class="btn btn-danger w-100 fw-bold"
+                >
+                  <i class="fas fa-save me-2"></i>Simpan Pengeluaran
+                </button>
+                <button
+                  type="button"
+                  id="btnBatal"
+                  class="btn btn-secondary w-100 fw-bold mt-2 d-none"
+                  onclick="batalEdit()"
+                >
+                  <i class="fas fa-times me-2"></i>Batal Edit
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-8 mb-4">
+            <div class="card card-custom p-4 h-100">
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h5 class="fw-bold mb-0">
+                  <i class="fas fa-list text-secondary me-2"></i>Riwayat
+                  Pengeluaran Bulan Ini
+                </h5>
+                <h5 class="fw-bold text-danger mb-0" id="totalPengeluaran">
+                  Total: Rp 0
+                </h5>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Tanggal</th>
+                      <th scope="col">Kategori</th>
+                      <th scope="col">Sumber Dana</th>
+                      <th scope="col">Keterangan</th>
+                      <th scope="col" class="text-end">Nominal</th>
+                      <th scope="col" class="text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+      document.getElementById("tanggal").valueAsDate = new Date();
+      const formatRp = (angka) => new Intl.NumberFormat("id-ID").format(angka);
+
+      // Ambil ID User dari memori browser
+      const currentUserId = localStorage.getItem("user_id");
+
+      function getCategoryIcon(kategori) {
+        if (
+          kategori.toLowerCase().includes("makan") ||
+          kategori.toLowerCase().includes("jajan")
+        )
+          return '<i class="fas fa-utensils me-1"></i>';
+        if (kategori.toLowerCase().includes("tagihan"))
+          return '<i class="fas fa-file-invoice-dollar me-1"></i>';
+        if (kategori.toLowerCase().includes("hiburan"))
+          return '<i class="fas fa-film me-1"></i>';
+        if (kategori.toLowerCase().includes("transportasi"))
+          return '<i class="fas fa-car me-1"></i>';
+        if (kategori.toLowerCase().includes("belanja"))
+          return '<i class="fas fa-shopping-bag me-1"></i>';
+        if (kategori.toLowerCase().includes("kesehatan"))
+          return '<i class="fas fa-notes-medical me-1"></i>';
+        return '<i class="fas fa-minus-circle me-1"></i>';
+      }
+
+      // ==========================================
+      // 1. FUNGSI LOAD KATEGORI
+      // ==========================================
+      async function loadKategoriDropdown() {
+        try {
+          const response = await fetch("/api/kategori", {
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER
+          });
+          const data = await response.json();
+          const selectKategori = document.getElementById(
+            "kategori_pengeluaran",
+          );
+
+          let html =
+            '<option value="" selected disabled>Pilih Kategori...</option>';
+          let needsHtml = '<optgroup label="Kebutuhan (Needs)">';
+          let wantsHtml = '<optgroup label="Keinginan (Wants)">';
+
+          if (response.ok) {
+            data.forEach((item) => {
+              if (item.tipe === "kebutuhan")
+                needsHtml += `<option value="${item.nama}">${item.nama}</option>`;
+              else if (item.tipe === "keinginan")
+                wantsHtml += `<option value="${item.nama}">${item.nama}</option>`;
+            });
+          }
+
+          selectKategori.innerHTML =
+            html + needsHtml + "</optgroup>" + wantsHtml + "</optgroup>";
+        } catch (error) {
+          console.error("Error muat kategori:", error);
+        }
+      }
+
+      // ==========================================
+      // 2. FUNGSI LOAD TABUNGAN UNTUK SUMBER DANA
+      // ==========================================
+      async function loadTabunganDropdown() {
+        try {
+          const response = await fetch("/api/tabungan", {
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER
+          });
+          const data = await response.json();
+          const selectTabungan = document.getElementById("id_tabungan");
+
+          selectTabungan.innerHTML =
+            '<option value="" selected disabled>Pilih Sumber Dana...</option>';
+
+          if (response.ok) {
+            data.forEach((item) => {
+              selectTabungan.innerHTML += `<option value="${item.id}">${item.nama_bank} (Sisa: Rp ${formatRp(item.saldo)})</option>`;
+            });
+          }
+        } catch (error) {
+          console.error("Error muat tabungan:", error);
+        }
+      }
+
+      // ==========================================
+      // 3. TAMPILKAN RIWAYAT PENGELUARAN (GET)
+      // ==========================================
+      async function loadRiwayatPengeluaran() {
+        try {
+          const response = await fetch("/api/pengeluaran", {
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER
+          });
+          const data = await response.json();
+          const tbody = document.getElementById("tabelBody");
+          const totalText = document.getElementById("totalPengeluaran");
+
+          tbody.innerHTML = "";
+          let totalNominal = 0;
+
+          if (response.ok) {
+            data.forEach((item) => {
+              totalNominal += parseFloat(item.nominal);
+              const keteranganText = item.keterangan ? item.keterangan : "-";
+
+              // Render Sumber Dana
+              const sumberDanaText = item.nama_bank
+                ? `<i class="fas fa-wallet text-info me-1"></i> ${item.nama_bank}`
+                : '<span class="text-muted fst-italic">Tidak ditentukan</span>';
+
+              const d = new Date(item.tanggal);
+              const year = d.getFullYear();
+              const month = String(d.getMonth() + 1).padStart(2, "0");
+              const day = String(d.getDate()).padStart(2, "0");
+              const tanggalInput = `${year}-${month}-${day}`;
+              const tanggalTabel = d.toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              });
+
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                  <td>${tanggalTabel}</td>
+                  <td><span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">${getCategoryIcon(item.kategori)} ${item.kategori}</span></td>
+                  <td class="fw-bold">${sumberDanaText}</td>
+                  <td class="text-muted small">${keteranganText}</td>
+                  <td class="text-end fw-bold text-danger">- Rp ${formatRp(item.nominal)}</td>
+                  <td class="text-center">
+                      <button class="btn btn-sm btn-outline-primary me-1" onclick="editPengeluaran('${item.id}', '${tanggalInput}', '${item.kategori}', '${item.nominal}', '${item.id_tabungan}', '${keteranganText}')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" onclick="hapusPengeluaran(${item.id})">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                  </td>
+              `;
+              tbody.appendChild(tr);
+            });
+            if (totalText)
+              totalText.innerText = `Total: Rp ${formatRp(totalNominal)}`;
+          }
+        } catch (error) {
+          console.error("Gagal memuat riwayat pengeluaran:", error);
+        }
+      }
+
+      // ==========================================
+      // 4. SIMPAN & UPDATE (POST / PUT)
+      // ==========================================
+      document
+        .getElementById("formPengeluaran")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const idPengeluaran = document.getElementById("id_pengeluaran").value;
+          const dataKirim = {
+            tanggal: document.getElementById("tanggal").value,
+            kategori_pengeluaran: document.getElementById(
+              "kategori_pengeluaran",
+            ).value,
+            nominal_pengeluaran: document.getElementById("nominal_pengeluaran")
+              .value,
+            id_tabungan: document.getElementById("id_tabungan").value,
+            keterangan: document.getElementById("keterangan").value,
+          };
+
+          const methodType = idPengeluaran ? "PUT" : "POST";
+          const endpointUrl = idPengeluaran
+            ? `/api/pengeluaran/${idPengeluaran}`
+            : "/api/pengeluaran";
+
+          try {
+            const response = await fetch(endpointUrl, {
+              method: methodType,
+              headers: {
+                "Content-Type": "application/json",
+                "user-id": currentUserId, // <--- SISIPKAN ID USER SAAT MENYIMPAN
+              },
+              body: JSON.stringify(dataKirim),
+            });
+
+            if (response.ok) {
+              const alertBox = document.getElementById("alertPengeluaran");
+              alertBox.classList.remove("d-none");
+
+              setTimeout(() => {
+                alertBox.classList.add("d-none");
+                batalEdit();
+                loadRiwayatPengeluaran();
+                loadTabunganDropdown(); // Refresh saldo dropdown setelah terpotong
+              }, 1500);
+            } else {
+              alert("Terjadi kesalahan server! Gagal menyimpan data.");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      // ==========================================
+      // 5. HAPUS DATA (DELETE)
+      // ==========================================
+      async function hapusPengeluaran(id) {
+        if (!confirm("Yakin ingin menghapus catatan pengeluaran ini?")) return;
+        try {
+          const response = await fetch(`/api/pengeluaran/${id}`, {
+            method: "DELETE",
+            headers: { "user-id": currentUserId }, // <--- SISIPKAN ID USER SAAT MENGHAPUS
+          });
+
+          if (response.ok) {
+            loadRiwayatPengeluaran();
+            loadTabunganDropdown();
+          } else {
+            alert("Gagal menghapus data!");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      // ==========================================
+      // 6. PERSIAPAN EDIT
+      // ==========================================
+      function editPengeluaran(
+        id,
+        tanggal,
+        kategori,
+        nominal,
+        id_tabungan,
+        keterangan,
+      ) {
+        document.getElementById("id_pengeluaran").value = id;
+        document.getElementById("tanggal").value = tanggal;
+        document.getElementById("kategori_pengeluaran").value = kategori;
+        document.getElementById("nominal_pengeluaran").value = nominal;
+
+        if (
+          id_tabungan !== "null" &&
+          id_tabungan !== "undefined" &&
+          id_tabungan
+        ) {
+          document.getElementById("id_tabungan").value = id_tabungan;
+        } else {
+          document.getElementById("id_tabungan").value = "";
+        }
+
+        document.getElementById("keterangan").value =
+          keterangan !== "-" ? keterangan : "";
+
+        document.getElementById("formTitle").innerHTML =
+          '<i class="fas fa-edit text-warning me-2"></i>Edit Pengeluaran';
+        const btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Update Data';
+        btnSimpan.classList.replace("btn-danger", "btn-warning");
+        btnSimpan.classList.add("text-dark");
+        document.getElementById("btnBatal").classList.remove("d-none");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ==========================================
+      // 7. BATAL EDIT
+      // ==========================================
+      function batalEdit() {
+        document.getElementById("formPengeluaran").reset();
+        document.getElementById("id_pengeluaran").value = "";
+        document.getElementById("tanggal").valueAsDate = new Date();
+
+        document.getElementById("formTitle").innerHTML =
+          '<i class="fas fa-minus-circle text-danger me-2"></i>Catat Pengeluaran';
+        const btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerHTML =
+          '<i class="fas fa-save me-2"></i>Simpan Pengeluaran';
+        btnSimpan.classList.replace("btn-warning", "btn-danger");
+        btnSimpan.classList.remove("text-dark");
+        document.getElementById("btnBatal").classList.add("d-none");
+      }
+
+      // PANGGIL SEMUA FUNGSI SAAT HALAMAN DIBUKA
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadKategoriDropdown();
+        await loadTabunganDropdown(); // Tunggu dropdown beres
+        loadRiwayatPengeluaran(); // Baru load tabel
+      });
+    </script>
+  </body>
+</html>
