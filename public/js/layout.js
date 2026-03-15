@@ -1,61 +1,52 @@
+// ========================================================
+// 1. PROTEKSI HALAMAN (DIEKSEKUSI INSTAN TANPA MENUNGGU HTML)
+// ========================================================
+const userId = localStorage.getItem("user_id");
+const userNama = localStorage.getItem("user_nama");
+const currentPage = window.location.pathname.split("/").pop() || "index.html";
+
+// Jika tidak ada user_id dan ini bukan halaman login/register, tendang seketika!
+if (
+  !userId &&
+  currentPage !== "login.html" &&
+  currentPage !== "register.html"
+) {
+  alert("Anda belum login! Silakan login terlebih dahulu.");
+  // Menggunakan replace() agar user tidak bisa menekan tombol "Back" di browser
+  window.location.replace("login.html");
+}
+
+// ========================================================
+// 2. KODE UI & SIDEBAR (TUNGGU HTML SELESAI DIMUAT)
+// ========================================================
+// Jika kode di atas lolos (user sudah login), barulah sisa script di bawah ini dijalankan
 document.addEventListener("DOMContentLoaded", function () {
-  // ========================================================
-  // 1. PROTEKSI HALAMAN & AMBIL DATA USER (LOGIKA BARU)
-  // ========================================================
-  const userId = localStorage.getItem("user_id");
-  const userNama = localStorage.getItem("user_nama");
-
-  // Mengambil nama file saat ini (misal: "pemasukan.html")
-  const currentPage = window.location.pathname.split("/").pop() || "index.html";
-
-  // Jika tidak ada user_id di memori browser dan ini bukan halaman login/register,
-  // maka tendang paksa ke halaman login.
-  if (
-    !userId &&
-    currentPage !== "login.html" &&
-    currentPage !== "register.html"
-  ) {
-    alert("Anda belum login! Silakan login terlebih dahulu.");
-    window.location.href = "login.html";
-    return; // Hentikan eksekusi kode di bawahnya
-  }
-
-  // ========================================================
-  // 2. GANTI NAMA & AVATAR PENGGUNA OTOMATIS (LOGIKA BARU)
-  // ========================================================
+  // GANTI NAMA & AVATAR PENGGUNA OTOMATIS
   if (userId && userNama) {
-    // Cari elemen tulisan nama pengguna di navbar (Mencari tag span berkelas fw-bold di dalam .user-profile)
     const elNama = document.querySelector(".user-profile span.fw-bold");
     if (elNama) {
       elNama.innerText = `Halo, ${userNama}!`;
     }
 
-    // Cari elemen gambar avatar
     const elAvatar = document.querySelector(".user-profile img.rounded-circle");
     if (elAvatar) {
       elAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNama)}&background=0d6efd&color=fff&bold=true`;
     }
   }
 
-  // ========================================================
-  // 3. LOAD SIDEBAR & NAVIGASI (KODE ASLI ANDA)
-  // ========================================================
-  // Mengambil file sidebar.html
+  // LOAD SIDEBAR & NAVIGASI
   fetch("/components/sidebar.html")
     .then((response) => response.text())
     .then((data) => {
-      // Menempelkan sidebar ke dalam wadah yang disiapkan di HTML
       document.getElementById("sidebar-container").innerHTML = data;
 
-      // Logika mendeteksi halaman aktif
       const navLinks = document.querySelectorAll(".sidebar-nav .nav-item");
 
       navLinks.forEach((link) => {
         const linkHref = link.getAttribute("href");
         if (linkHref === currentPage) {
-          link.classList.add("active"); // Jadikan biru sebagai default
+          link.classList.add("active");
 
-          // Khusus halaman pengeluaran, ubah warna aktifnya jadi merah
           if (currentPage === "pengeluaran.html") {
             link.style.backgroundColor = "#e74c3c";
             link.style.borderLeft = "5px solid #c0392b";

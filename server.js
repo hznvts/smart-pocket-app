@@ -215,9 +215,11 @@ app.post("/api/lupa-password", (req, res) => {
               .status(500)
               .json({ status: "error", message: "Gagal mereset password" });
 
-          // 5. Kirim email menggunakan Nodemailer
+          // 5. Kirim email menggunakan Nodemailer (Mode Spesifik & Aman)
           const transporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
               user: "smartpocket.id@gmail.com",
               pass: "rsjr atbl oyaz krkr",
@@ -225,13 +227,13 @@ app.post("/api/lupa-password", (req, res) => {
           });
 
           const mailOptions = {
-            from: '"Smart Pocket Support" <EMAIL_GMAIL_ANDA@gmail.com>',
+            from: '"Smart Pocket Support" <smartpocket.id@gmail.com>',
             to: email,
             subject: "Reset Password - Smart Pocket",
             html: `
-          <h3>Halo!</h3>
-          <p>Anda telah meminta untuk mereset password akun Smart Pocket Anda.</p>
-          <p>Berikut adalah password sementara Anda:</p>
+          <h3>Halo</h3>
+          <p>Kami menerima permintaan untuk mengatur ulang password akun Anda di Smart Pocket.</p>
+          <p>Silahkan gunakan password sementara di bawah ini:</p>
           <h2 style="color: #0d6efd;">${tempPassword}</h2>
           <p>Silakan login menggunakan password di atas, dan <b>segera ubah password Anda</b> di menu Edit Profil demi keamanan.</p>
           <br>
@@ -249,7 +251,7 @@ app.post("/api/lupa-password", (req, res) => {
             console.error("Error kirim email:", mailErr);
             res.status(500).json({
               status: "error",
-              message: "Gagal mengirim email. Pastikan pengaturan email benar.",
+              message: "Gagal mengirim email. Pastikan email anda benar.",
             });
           }
         },
