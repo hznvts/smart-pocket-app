@@ -82,3 +82,47 @@ function handleGoogleLogin(response) {
       console.error("Error:", error);
     });
 }
+
+// Menangkap event form Lupa Password
+document
+  .getElementById("formLupaPassword")
+  .addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const emailLupa = document.getElementById("emailLupa").value;
+    const alertBox = document.getElementById("alertLupaPassword");
+    const btnKirim = document.getElementById("btnKirimEmail");
+
+    // Ubah tombol jadi loading
+    btnKirim.innerText = "Mengirim...";
+    btnKirim.disabled = true;
+    alertBox.classList.add("d-none");
+
+    fetch("/api/lupa-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailLupa }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        btnKirim.innerText = "Kirim Password Sementara";
+        btnKirim.disabled = false;
+
+        alertBox.classList.remove("d-none");
+        if (data.status === "success") {
+          alertBox.className = "alert alert-success py-2 small";
+          alertBox.innerText = data.message;
+          document.getElementById("emailLupa").value = ""; // Kosongkan input
+        } else {
+          alertBox.className = "alert alert-danger py-2 small";
+          alertBox.innerText = data.message;
+        }
+      })
+      .catch((error) => {
+        btnKirim.innerText = "Kirim Password Sementara";
+        btnKirim.disabled = false;
+        alertBox.classList.remove("d-none");
+        alertBox.className = "alert alert-danger py-2 small";
+        alertBox.innerText = "Terjadi kesalahan server.";
+      });
+  });

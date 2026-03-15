@@ -66,7 +66,57 @@
           Masuk
         </button>
       </form>
-
+      <div
+        class="modal fade"
+        id="modalLupaPassword"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold text-primary">
+                <i class="fas fa-envelope me-2"></i>Lupa Password
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p class="small text-muted">
+                Masukkan email yang terdaftar. Kami akan mengirimkan password
+                sementara ke email Anda.
+              </p>
+              <div
+                id="alertLupaPassword"
+                class="alert d-none py-2 small"
+                role="alert"
+              ></div>
+              <form id="formLupaPassword">
+                <div class="mb-3">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="emailLupa"
+                    placeholder="Masukkan alamat email"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 fw-bold"
+                  id="btnKirimEmail"
+                >
+                  Kirim Password Sementara
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="text-center">
         <small class="text-muted"
           >Belum punya akun?

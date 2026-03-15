@@ -1,3 +1,4 @@
+const nodemailer = require("nodemailer");
 const express = require("express");
 const mysql = require("mysql2");
 const path = require("path");
@@ -173,6 +174,90 @@ app.post("/api/google-login", async (req, res) => {
     });
   }
 });
+
+// --- API LUPA PASSWORD ---
+app.post("/api/lupa-password", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "Email wajib diisi!" });
+  }
+
+  // 1. Cek apakah email terdaftar di database
+  db.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    async (err, results) => {
+      if (err)
+        return res
+          .status(500)
+          .json({ status: "error", message: "Database error" });
+      if (results.length === 0)
+        return res
+          .status(404)
+          .json({ status: "error", message: "Email tidak terdaftar!" });
+
+      // 2. Buat password sementara (Acak 6 karakter)
+      const tempPassword = Math.random().toString(36).slice(-6);
+
+      // 3. Hash password sementara tersebut
+      const hashedTempPassword = await bcrypt.hash(tempPassword, 10);
+
+      // 4. Update database dengan password baru
+      db.query(
+        "UPDATE users SET password = ? WHERE email = ?",
+        [hashedTempPassword, email],
+        async (errUpdate) => {
+          if (errUpdate)
+            return res
+              .status(500)
+              .json({ status: "error", message: "Gagal mereset password" });
+
+          // 5. Kirim email menggunakan Nodemailer
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "smartpocket.id@gmail.com",
+              pass: "rsjr atbl oyaz krkr",
+            },
+          });
+
+          const mailOptions = {
+            from: '"Smart Pocket Support" <EMAIL_GMAIL_ANDA@gmail.com>',
+            to: email,
+            subject: "Reset Password - Smart Pocket",
+            html: `
+          <h3>Halo!</h3>
+          <p>Anda telah meminta untuk mereset password akun Smart Pocket Anda.</p>
+          <p>Berikut adalah password sementara Anda:</p>
+          <h2 style="color: #0d6efd;">${tempPassword}</h2>
+          <p>Silakan login menggunakan password di atas, dan <b>segera ubah password Anda</b> di menu Edit Profil demi keamanan.</p>
+          <br>
+          <p>Salam hangat,<br>Tim Smart Pocket</p>
+        `,
+          };
+
+          try {
+            await transporter.sendMail(mailOptions);
+            res.status(200).json({
+              status: "success",
+              message: "Password sementara telah dikirim ke email Anda!",
+            });
+          } catch (mailErr) {
+            console.error("Error kirim email:", mailErr);
+            res.status(500).json({
+              status: "error",
+              message: "Gagal mengirim email. Pastikan pengaturan email benar.",
+            });
+          }
+        },
+      );
+    },
+  );
+});
+
 // ==========================================
 // API ROUTES UNTUK FITUR PEMASUKAN
 // ==========================================
