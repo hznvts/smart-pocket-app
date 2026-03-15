@@ -245,7 +245,7 @@
         <div class="row mb-4 g-3">
           <div class="col-lg-5">
             <div class="card card-custom p-4">
-              <h6 class="fw-bold mb-4 text-center">Visualisasi Arus Kas</h6>
+              <h6 class="fw-bold mb-4 text-center">Cashflow</h6>
               <div style="width: 250px; margin: 0 auto">
                 <canvas id="cashflowChart"></canvas>
               </div>
@@ -257,9 +257,7 @@
               <div
                 class="d-flex justify-content-between align-items-center mb-4"
               >
-                <h6 class="fw-bold mb-0">
-                  Ringkasan Rekomendasi Budget Terkini
-                </h6>
+                <h6 class="fw-bold mb-0">Ringkasan Rekomendasi Budget</h6>
                 <a
                   href="rekomendasi.html"
                   class="btn btn-sm btn-outline-primary"
@@ -267,8 +265,8 @@
                 >
               </div>
               <p class="text-muted small mb-3">
-                Berdasarkan perhitungan Fuzzy Tsukamoto terakhir, berikut adalah
-                batas ideal alokasi dana Anda bulan ini:
+                Berdasarkan perhitungan finansial Anda, berikut adalah batas
+                ideal alokasi dana Anda bulan ini:
               </p>
 
               <div class="row g-2 text-center">
@@ -338,7 +336,7 @@
               <div
                 class="d-flex justify-content-between align-items-center mb-4"
               >
-                <h6 class="fw-bold mb-0">5 Transaksi Terakhir</h6>
+                <h6 class="fw-bold mb-0">Transaksi Terakhir</h6>
                 <a
                   href="riwayat.html"
                   class="text-decoration-none small fw-bold"
@@ -494,7 +492,7 @@
             } else {
               // Jika belum ada data rekomendasi sama sekali di database bulan ini
               document.getElementById("progressText").innerText =
-                `Rp ${formatRp(totalKeluar)} / Rp 0 (Hitung dulu di menu Rekomendasi)`;
+                `Rp ${formatRp(totalKeluar)} / Rp 0 (Lakukan perhitungan terlebih dahulu)`;
               document.getElementById("progressBar").style.width = `0%`;
             }
           } catch (error) {

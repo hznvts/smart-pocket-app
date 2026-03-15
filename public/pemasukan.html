@@ -210,7 +210,7 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold text-muted"
-                    >Sumber Pemasukan (Kategori)</label
+                    >Kategori</label
                   >
                   <select class="form-select" id="sumber_pemasukan" required>
                     <option value="" selected disabled>Pilih Sumber...</option>
@@ -228,14 +228,14 @@
                     type="number"
                     class="form-control"
                     id="nominal_pemasukan"
-                    placeholder="Contoh: 5000000"
+                    placeholder="Masukkan nominal"
                     required
                   />
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label small fw-bold text-muted"
-                    >Tujuan Dana (Masuk ke rekening mana?)</label
+                    >Tujuan Dana</label
                   >
                   <select class="form-select" id="id_tabungan" required>
                     <option value="" selected disabled>
@@ -261,7 +261,7 @@
                   id="btnSimpan"
                   class="btn btn-success w-100 fw-bold"
                 >
-                  <i class="fas fa-save me-2"></i>Simpan Pemasukan
+                  <i class="fas fa-save me-2"></i>Simpan
                 </button>
                 <button
                   type="button"
@@ -269,7 +269,7 @@
                   class="btn btn-secondary w-100 fw-bold mt-2 d-none"
                   onclick="batalEdit()"
                 >
-                  <i class="fas fa-times me-2"></i>Batal Edit
+                  <i class="fas fa-times me-2"></i>Batal
                 </button>
               </form>
             </div>
@@ -294,7 +294,7 @@
                   <thead class="table-light">
                     <tr>
                       <th scope="col">Tanggal</th>
-                      <th scope="col">Sumber / Kategori</th>
+                      <th scope="col">Kategori</th>
                       <th scope="col">Tujuan Dana</th>
                       <th scope="col">Keterangan</th>
                       <th scope="col" class="text-end">Nominal</th>
@@ -332,7 +332,7 @@
           const selectSumber = document.getElementById("sumber_pemasukan");
 
           selectSumber.innerHTML =
-            '<option value="" selected disabled>Pilih Sumber...</option>';
+            '<option value="" selected disabled>Pilih Kategori...</option>';
 
           if (response.ok) {
             data.forEach((item) => {
@@ -534,7 +534,7 @@
         document.getElementById("formTitle").innerHTML =
           '<i class="fas fa-edit text-warning me-2"></i>Edit Pemasukan';
         const btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Update Data';
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
         btnSimpan.classList.replace("btn-success", "btn-warning");
         btnSimpan.classList.add("text-dark");
         document.getElementById("btnBatal").classList.remove("d-none");
@@ -550,8 +550,7 @@
         document.getElementById("formTitle").innerHTML =
           '<i class="fas fa-plus-circle text-success me-2"></i>Catat Pemasukan';
         const btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerHTML =
-          '<i class="fas fa-save me-2"></i>Simpan Pemasukan';
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
         btnSimpan.classList.replace("btn-warning", "btn-success");
         btnSimpan.classList.remove("text-dark");
         document.getElementById("btnBatal").classList.add("d-none");

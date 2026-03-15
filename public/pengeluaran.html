@@ -210,7 +210,7 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold text-muted"
-                    >Kategori Pengeluaran</label
+                    >Kategori</label
                   >
                   <select
                     class="form-select"
@@ -251,13 +251,13 @@
                     type="number"
                     class="form-control"
                     id="nominal_pengeluaran"
-                    placeholder="Contoh: 150000"
+                    placeholder="Masukkan nominal"
                     required
                   />
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold text-muted"
-                    >Sumber Dana (Pakai uang dari mana?)</label
+                    >Sumber Dana</label
                   >
                   <select class="form-select" id="id_tabungan" required>
                     <option value="" selected disabled>
@@ -273,7 +273,7 @@
                     class="form-control"
                     id="keterangan"
                     rows="2"
-                    placeholder="Catatan, misal: Makan siang di kafe..."
+                    placeholder="Catatan tambahan..."
                   ></textarea>
                 </div>
 
@@ -282,7 +282,7 @@
                   id="btnSimpan"
                   class="btn btn-danger w-100 fw-bold"
                 >
-                  <i class="fas fa-save me-2"></i>Simpan Pengeluaran
+                  <i class="fas fa-save me-2"></i>Simpan
                 </button>
                 <button
                   type="button"
@@ -290,7 +290,7 @@
                   class="btn btn-secondary w-100 fw-bold mt-2 d-none"
                   onclick="batalEdit()"
                 >
-                  <i class="fas fa-times me-2"></i>Batal Edit
+                  <i class="fas fa-times me-2"></i>Batal
                 </button>
               </form>
             </div>
@@ -586,7 +586,7 @@
         document.getElementById("formTitle").innerHTML =
           '<i class="fas fa-edit text-warning me-2"></i>Edit Pengeluaran';
         const btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Update Data';
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
         btnSimpan.classList.replace("btn-danger", "btn-warning");
         btnSimpan.classList.add("text-dark");
         document.getElementById("btnBatal").classList.remove("d-none");
@@ -604,8 +604,7 @@
         document.getElementById("formTitle").innerHTML =
           '<i class="fas fa-minus-circle text-danger me-2"></i>Catat Pengeluaran';
         const btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerHTML =
-          '<i class="fas fa-save me-2"></i>Simpan Pengeluaran';
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
         btnSimpan.classList.replace("btn-warning", "btn-danger");
         btnSimpan.classList.remove("text-dark");
         document.getElementById("btnBatal").classList.add("d-none");

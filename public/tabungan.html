@@ -218,7 +218,7 @@
                     type="number"
                     class="form-control"
                     id="saldo"
-                    placeholder="Contoh: 10000000"
+                    placeholder="Masukkan nominal"
                     required
                   />
                 </div>
@@ -239,7 +239,7 @@
                   id="btnSimpan"
                   class="btn btn-info w-100 fw-bold text-white"
                 >
-                  <i class="fas fa-save me-2"></i>Simpan Saldo
+                  <i class="fas fa-save me-2"></i>Simpan
                 </button>
                 <button
                   type="button"
@@ -247,7 +247,7 @@
                   class="btn btn-secondary w-100 fw-bold mt-2 d-none"
                   onclick="batalEdit()"
                 >
-                  <i class="fas fa-times me-2"></i>Batal Edit
+                  <i class="fas fa-times me-2"></i>Batal
                 </button>
               </form>
             </div>
@@ -444,7 +444,7 @@
           '<i class="fas fa-edit text-warning me-2"></i>Edit Saldo Aset';
 
         const btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Update Saldo';
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
         btnSimpan.classList.replace("btn-info", "btn-warning");
         btnSimpan.classList.replace("text-white", "text-dark");
 
@@ -461,7 +461,7 @@
           '<i class="fas fa-plus-circle text-info me-2"></i>Catat Saldo Aset';
 
         const btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Saldo';
+        btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
         btnSimpan.classList.replace("btn-warning", "btn-info");
         btnSimpan.classList.replace("text-dark", "text-white");
 
