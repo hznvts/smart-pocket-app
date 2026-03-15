@@ -48,38 +48,51 @@ document
       });
   }); // <--- PENUTUP EVENT LISTENER FORM LOGIN SAMPAI DI SINI
 
+// ==========================================
+// 1. PEMBERSIH MEMORI OTOMATIS
+// ==========================================
+// Begitu halaman login terbuka, langsung hapus semua sisa data user sebelumnya
+localStorage.clear();
+
 // ========================================================
 // 2. FUNGSI GOOGLE LOGIN (HARUS BERADA DI LUAR EVENT LISTENER)
 // ========================================================
 // Fungsi ini dipanggil otomatis oleh Google setelah user memilih akun
+// Fungsi ini otomatis dipanggil oleh Google setelah user memilih akun di pop-up
 function handleGoogleLogin(response) {
+  // response.credential adalah "Tiket Rahasia" dari Google
   const googleToken = response.credential;
-  const alertBox = document.getElementById("alertPesan");
 
-  // Mengirim token rahasia dari Google ke server Node.js kita
+  const alertBox = document.getElementById("alertPesan");
+  alertBox.classList.add("d-none"); // Sembunyikan alert sebelumnya
+
+  // Kirim tiket tersebut ke server Node.js kita
   fetch("/api/google-login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ token: googleToken }),
   })
     .then((res) => res.json())
     .then((data) => {
       if (data.status === "success") {
-        alertBox.classList.add("d-none");
-        console.log("Login Google sukses:", data.user);
+        // Simpan data user ke memori browser
+        localStorage.setItem("user_id", data.user.id);
+        localStorage.setItem("user_nama", data.user.nama);
 
-        // Simpan data dari Google ke memori browser
-        localStorage.setItem("user_nama", data.user.name);
-
-        // Pindah ke dashboard
-        window.location.href = "index.html";
+        // Lempar ke halaman Dashboard
+        window.location.replace("index.html");
       } else {
+        // Jika gagal, tampilkan pesan error dari server
+        alertBox.innerText = data.message || "Gagal memverifikasi akun Google.";
         alertBox.classList.remove("d-none");
-        alertBox.innerText = data.message;
       }
     })
     .catch((error) => {
-      console.error("Error:", error);
+      console.error("Error Google Login:", error);
+      alertBox.innerText = "Terjadi kesalahan pada server saat login Google.";
+      alertBox.classList.remove("d-none");
     });
 }
 

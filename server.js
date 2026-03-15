@@ -1,5 +1,9 @@
 const nodemailer = require("nodemailer");
 const express = require("express");
+const { OAuth2Client } = require("google-auth-library");
+const googleClient = new OAuth2Client(
+  "405074565815-61tjdkkccuusga2u5sbvprf3gqh72d83.apps.googleusercontent.com",
+);
 const mysql = require("mysql2");
 const path = require("path");
 const app = express();
@@ -134,43 +138,76 @@ app.post("/api/login", (req, res) => {
   );
 });
 
-const { OAuth2Client } = require("google-auth-library");
-// Nanti ganti string ini dengan Client ID asli Anda
-const CLIENT_ID = "CLIENT_ID_GOOGLE_ANDA_DISINI";
-const client = new OAuth2Client(CLIENT_ID);
-
-// --- API UNTUK LOGIN GOOGLE ---
+// --- API LOGIN DENGAN GOOGLE ---
 app.post("/api/google-login", async (req, res) => {
   const { token } = req.body;
 
   try {
-    // Memverifikasi keaslian token langsung ke server Google
-    const ticket = await client.verifyIdToken({
+    // 1. Verifikasi tiket/token dari Google
+    const ticket = await googleClient.verifyIdToken({
       idToken: token,
-      audience: CLIENT_ID,
+      audience:
+        "405074565815-61tjdkkccuusga2u5sbvprf3gqh72d83.apps.googleusercontent.com", // Harus sama dengan yang di atas
     });
 
-    // Membongkar data user dari Google
+    // 2. Ambil data user dari tiket tersebut
     const payload = ticket.getPayload();
-    const userEmail = payload["email"];
-    const userName = payload["name"];
-    const userPicture = payload["picture"]; // Bisa dipakai untuk foto profil nanti
+    const emailGoogle = payload.email;
+    const namaGoogle = payload.name;
 
-    console.log(
-      `User berhasil login dengan Google: ${userName} (${userEmail})`,
+    // 3. Cek apakah email ini sudah terdaftar di database kita
+    db.query(
+      "SELECT id, nama, email FROM users WHERE email = ?",
+      [emailGoogle],
+      async (err, results) => {
+        if (err)
+          return res
+            .status(500)
+            .json({ status: "error", message: "Database error" });
+
+        if (results.length > 0) {
+          // JIKA SUDAH TERDAFTAR: Langsung berikan izin masuk
+          const user = results[0];
+          res.status(200).json({
+            status: "success",
+            message: "Login Google berhasil",
+            user: { id: user.id, nama: user.nama },
+          });
+        } else {
+          // JIKA BELUM TERDAFTAR: Kita daftarkan otomatis secara diam-diam (Auto-Register)
+          // Kita buatkan password acak karena dia login pakai Google
+          const randomPassword = await bcrypt.hash(
+            Math.random().toString(36).slice(-8),
+            10,
+          );
+
+          const sqlInsert =
+            "INSERT INTO users (nama, email, password) VALUES (?, ?, ?)";
+          db.query(
+            sqlInsert,
+            [namaGoogle, emailGoogle, randomPassword],
+            (errInsert, resultInsert) => {
+              if (errInsert)
+                return res.status(500).json({
+                  status: "error",
+                  message: "Gagal membuat akun otomatis",
+                });
+
+              res.status(200).json({
+                status: "success",
+                message: "Akun berhasil dibuat dan login",
+                user: { id: resultInsert.insertId, nama: namaGoogle },
+              });
+            },
+          );
+        }
+      },
     );
-
-    // Sukses! Beri tahu frontend untuk pindah halaman
-    res.json({
-      status: "success",
-      message: "Login Google berhasil",
-      user: { name: userName, email: userEmail, picture: userPicture },
-    });
   } catch (error) {
-    console.error("Verifikasi Google gagal:", error);
-    res.json({
+    console.error("Error verifikasi Google:", error);
+    res.status(401).json({
       status: "error",
-      message: "Gagal memverifikasi akun Google.",
+      message: "Gagal memverifikasi token Google dari server",
     });
   }
 });
