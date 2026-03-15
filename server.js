@@ -251,7 +251,7 @@ app.post("/api/lupa-password", (req, res) => {
             console.error("Error kirim email:", mailErr);
             res.status(500).json({
               status: "error",
-              message: "Gagal mengirim email. Pastikan email anda benar.",
+              message: "Gagal mengirim email. Pastikan pengaturan email benar.",
             });
           }
         },
